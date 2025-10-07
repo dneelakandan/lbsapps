@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: terraform-deploy
+  group: aks-deploy
   cancel-in-progress: true
 
 jobs:
