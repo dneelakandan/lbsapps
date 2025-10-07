@@ -29,17 +29,17 @@ jobs:
       run: az acr login --name ${{ secrets.ACR_NAME }}
 
     
-    #- name: Install dependencies and run SonarQube scan
-    #  env:
-    #    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #  run: |
-    #    cd services/${{ matrix.service }}
-    #    npm install
-    #    npx sonar-scanner \
-    #      -Dsonar.projectKey=${{ matrix.service }} \
-    #      -Dsonar.sources=. \
-    #      -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-    #      -Dsonar.login=$SONAR_TOKEN
+    - name: Install dependencies and run SonarQube scan
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        cd services/${{ matrix.service }}
+        npm install
+        npx sonar-scanner \
+          -Dsonar.projectKey=${{ matrix.service }} \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+          -Dsonar.login=$SONAR_TOKEN
     - name: Build and push Docker image
       run: |
         docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ matrix.service }}:latest ./services/${{ matrix.service }}
