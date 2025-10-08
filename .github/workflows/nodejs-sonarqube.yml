@@ -58,12 +58,12 @@ jobs:
     - name: Set AKS context
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
     
-    - name: Enable AKS API server public access
-      run: |
-        az aks update \
-          --name ${{ secrets.AKS_CLUSTER }} \
-          --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
-          --api-server-authorized-ip-ranges 0.0.0.0/0
+    #- name: Enable AKS API server public access
+    #  run: |
+    #    az aks update \
+    #      --name ${{ secrets.AKS_CLUSTER }} \
+    #      --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
+    #      --api-server-authorized-ip-ranges 0.0.0.0/0
 
 
     
@@ -85,12 +85,12 @@ jobs:
           --set image.tag=latest
 
     
-    - name: Revoke AKS API server public access
-      run: |
-        az aks update \
-          --name ${{ secrets.AKS_CLUSTER }} \
-          --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
-          --api-server-authorized-ip-ranges ""
+    #- name: Revoke AKS API server public access
+    #  run: |
+    #    az aks update \
+    #      --name ${{ secrets.AKS_CLUSTER }} \
+    #      --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
+    #      --api-server-authorized-ip-ranges ""
 
 
     
