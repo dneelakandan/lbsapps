@@ -61,19 +61,19 @@ jobs:
     
     - name: Install Helm
       run: |
-      curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
     - name: Deploy appointment-service with Helm
       run: |
-      helm upgrade --install appointment-service ./helm/appointment-service \
-        --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
-        --set image.tag=latest
+        helm upgrade --install appointment-service ./helm/appointment-service \
+          --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
+          --set image.tag=latest
 
     - name: Deploy patient-service with Helm
       run: |
-      helm upgrade --install patient-service ./helm/patient-service \
-        --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
-        --set image.tag=latest
+        helm upgrade --install patient-service ./helm/patient-service \
+          --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
+          --set image.tag=latest
 
     
     
