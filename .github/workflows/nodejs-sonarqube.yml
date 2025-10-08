@@ -64,12 +64,14 @@ jobs:
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
     - name: Deploy appointment-service with Helm
+      run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
       run: |
         helm upgrade --install appointment-service ./helm/appointment-service \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
           --set image.tag=latest
 
     - name: Deploy patient-service with Helm
+      run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
       run: |
         helm upgrade --install patient-service ./helm/patient-service \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
