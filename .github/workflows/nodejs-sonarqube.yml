@@ -59,7 +59,7 @@ jobs:
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
     
     - name: Enable AKS API server public access
-      run: az aks update --name ${{ secrets.AKS_CLUSTER }} --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
+      run: az aks update --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}  \
              --api-server-authorized-ip-ranges {{ secrets.PUBLIC_IP }}
 
     
@@ -82,7 +82,7 @@ jobs:
 
     
     - name: Revoke AKS API server public access
-      run: az aks update --name ${{ secrets.AKS_CLUSTER }} --resource-group ${{ secrets.AKS_RESOURCE_GRP }} \
+      run: az aks update --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}  \
              --api-server-authorized-ip-ranges {{ secrets.PUBLIC_IP }}
 
     
