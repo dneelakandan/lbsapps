@@ -75,7 +75,6 @@ jobs:
           --set image.tag=latest
 
     - name: Deploy patient-service with Helm
-      run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
       run: |
         helm upgrade --install patient-service ./helm/patient-service \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
