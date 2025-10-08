@@ -57,32 +57,50 @@ jobs:
 
     - name: Set AKS context
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
+
+    
+    - name: Install Helm
+      run: |
+      curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Deploy appointment-service with Helm
+      run: |
+      helm upgrade --install appointment-service ./helm/appointment-service \
+        --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
+        --set image.tag=latest
+
+    - name: Deploy patient-service with Helm
+      run: |
+      helm upgrade --install patient-service ./helm/patient-service \
+        --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
+        --set image.tag=latest
+
     
     
-    - name: Deploy using Azure CLI deploy appoinment deployment
-      run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
-             --command "kubectl apply -f -" \
-             --file  k8s/appointment-deployment.yml
+    #- name: Deploy using Azure CLI deploy appoinment deployment
+    #  run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
+    #         --command "kubectl apply -f -" \
+    #         --file  k8s/appointment-deployment.yml
               
 
-    - name: Deploy using Azure CLI deploy appoiment service
-      run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
-             --command "kubectl apply -f -" \
-             --file  k8s/appointment-service.yml
+    #- name: Deploy using Azure CLI deploy appoiment service
+    #  run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
+    #         --command "kubectl apply -f -" \
+    #         --file  k8s/appointment-service.yml
 
-    - name: Deploy using Azure CLI deploy patient deployment
-      run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
-              --command "kubectl apply -f -" \
-              --file  k8s/patient-deployment.yml
+    #- name: Deploy using Azure CLI deploy patient deployment
+    #  run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
+    #          --command "kubectl apply -f -" \
+    #          --file  k8s/patient-deployment.yml
 
 
-    - name: Deploy using Azure CLI deploy patient service
-      run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
-              --command "kubectl apply -f -" \              --file  k8s/patient-service.yml
+    #- name: Deploy using Azure CLI deploy patient service
+    #  run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
+    #          --command "kubectl apply -f -" \              --file  k8s/patient-service.yml
 
-    - name: Deploy using Azure CLI deploy Ingress
-      run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
-              --command "kubectl apply -f -" \
-              --file  k8s/ingress.yml
+    #- name: Deploy using Azure CLI deploy Ingress
+    #  run: az aks command invoke --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }} \
+    #          --command "kubectl apply -f -" \
+    #          --file  k8s/ingress.yml
     
    
