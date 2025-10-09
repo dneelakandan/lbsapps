@@ -4,5 +4,6 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 service:
+  name: appointment-service
   type: ClusterIP
   port: 3001
