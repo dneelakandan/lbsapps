@@ -144,7 +144,7 @@ jobs:
 
     - name: Deploy to AKS using Helm
       run: |
-        cd kubernetes/helm
+        cd helm
         # Use --create-namespace but it should work now since we pre-created it with proper labels
         helm upgrade --install healthcare . \
           --namespace healthcare-ns \
