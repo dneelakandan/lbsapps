@@ -182,7 +182,7 @@ jobs:
           done
       - name: Verify deployment
         run: |
-          echo "=== Production Deployment Verification ==="
+          echo "=== Deployment Verification ==="
           kubectl get pods -n healthcare -o wide
           echo ""
           kubectl get services -n healthcare
@@ -193,10 +193,10 @@ jobs:
  
       - name: Run smoke tests
         run: |
-          echo "Waiting for production services to be ready..."
-          kubectl wait --for=condition=ready pod -l app=patient-service -n healthcare --timeout=300s
-          kubectl wait --for=condition=ready pod -l app=appointment-service -n healthcare --timeout=300s
+          echo "checking services to be ready"
+          kubectl wait --for=condition=ready pod -l app=patientservice -n healthcare --timeout=300s
+          kubectl wait --for=condition=ready pod -l app=appointmentservice -n healthcare --timeout=300s
           echo "Testing production health endpoints..."
-          kubectl run -it --rm --restart=Never test-patient-prod --image=curlimages/curl --namespace=healthcare --command -- curl -s -f http://patient-service:3000/health && echo "Patient service: HEALTHY" || echo "Patient service: UNHEALTHY"
-          kubectl run -it --rm --restart=Never test-appointment-prod --image=curlimages/curl --namespace=healthcare --command -- curl -s -f http://appointment-service:3001/health && echo "Appointment service: HEALTHY" || echo "Appointment service: UNHEALTHY"
+          kubectl run -it --rm --restart=Never test-patient --image=curlimages/curl --namespace=healthcare --command -- curl -s -f http://patientservice:3000/health && echo "Patient service: HEALTHY" || echo "Patient service: UNHEALTHY"
+          kubectl run -it --rm --restart=Never test-appointment --image=curlimages/curl --namespace=healthcare --command -- curl -s -f http://appointmentservice:3001/health && echo "Appointment service: HEALTHY" || echo "Appointment service: UNHEALTHY"
           echo "Production deployment verified"    
