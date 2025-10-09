@@ -59,7 +59,7 @@ spec:
           runAsUser: 1000
           allowPrivilegeEscalation: false
       imagePullSecrets:
-      - name: acr-secret
+        - name: acr-secret
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
