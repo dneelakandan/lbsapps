@@ -84,6 +84,7 @@ jobs:
           --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
           --set image.tag=latest
+          --values ./appointment-service/values.yaml
           
     - name: Deploy patient-service with Helm
       run: |
@@ -92,6 +93,7 @@ jobs:
           --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
           --set image.tag=latest
+          --values ./patient-service/values.yaml
 
     
     #- name: Revoke AKS API server public access
