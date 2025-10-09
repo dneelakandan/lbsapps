@@ -1,0 +1,118 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: aks-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name ${{ secrets.ACR_NAME }}
+
+      - name: Install dependencies and run SonarQube scan for appointment-service
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd services/appointment-service
+          npm install
+          npx sonar-scanner \
+            -Dsonar.projectKey=appointment-service \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=$SONAR_TOKEN
+
+      - name: Install dependencies and run SonarQube scan for patient-service
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          cd services/patient-service
+          npm install
+          npx sonar-scanner \
+            -Dsonar.projectKey=patient-service \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.login=$SONAR_TOKEN
+
+      - name: Build and push Docker image for appointment-service
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest ./services/appointment-service
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest
+
+      - name: Build and push Docker image for patient-service
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest ./services/patient-service
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Azure Login (for AKS)
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AKS context
+        run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Create namespace with Helm labels
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: healthcare-ns
+            labels:
+              app.kubernetes.io/managed-by: Helm
+            annotations:
+              meta.helm.sh/release-name: healthcare
+              meta.helm.sh/release-namespace: healthcare
+          EOF
+
+      - name: Create ACR pull secret
+        run: |
+          kubectl create secret docker-registry acr-secret \
+            --namespace healthcare-ns \
+            --docker-server=${{ secrets.ACR_NAME }}.azurecr.io \
+            --docker-username=${{ secrets.AZURE_CLIENT_ID }} \
+            --docker-password=${{ secrets.AZURE_CLIENT_SECRET }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to AKS using Helm
+        run: |
+          cd helm
+          helm upgrade --install healthcare . \
+            --namespace healthcare-ns \
+            --create-namespace \
+            --wait \
+            --timeout 10m \
+            --set global.environment=dev \
+            --set image.registry=${{ secrets.ACR_NAME }} \
+            --set patientService.image=patient-service \
+            --set patientService.tag=${{ github.sha }} \
+            --set appointmentService.image=appointment-service \
+            --set appointmentService.tag=${{ github.sha }} \
+            --values values-dev.yaml
