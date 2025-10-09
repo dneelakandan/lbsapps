@@ -79,7 +79,7 @@ jobs:
       run: |
         cd helm
         pwd
-        helm upgrade --install application-service .\
+        helm upgrade --install appointment-service .\
           --namespace healthcare \
           --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
