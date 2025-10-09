@@ -53,13 +53,13 @@ jobs:
 
       - name: Build and push Docker image for appointment-service
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:${{ github.sha }} ./services/appointment-service
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest ./services/appointment-service
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest
 
       - name: Build and push Docker image for patient-service
         run: |
-          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:${{ github.sha }} ./services/patient-service
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest ./services/patient-service
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
@@ -166,9 +166,9 @@ jobs:
             --set global.environment=dev \
             --set image.registry=${{ secrets.ACR_NAME }} \
             --set patientService.image=patient-service \
-            --set patientService.tag=${{ github.sha }} \
+            --set patientService.tag=latest \
             --set appointmentService.image=appointment-service \
-            --set appointmentService.tag=${{ github.sha }} \
+            --set appointmentService.tag=latest \
             --values values-dev.yaml
           do
             COUNT=$((COUNT + 1))
