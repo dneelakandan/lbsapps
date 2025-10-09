@@ -104,7 +104,12 @@ jobs:
       - name: Deploy to AKS using Helm
         run: |
           cd helm
-          helm upgrade --install healthcare . \
+          
+          MAX_RETRIES=5
+          RETRY_DELAY=30
+          COUNT=0
+
+          until helm upgrade --install healthcare . \
             --namespace healthcare-ns \
             --create-namespace \
             --wait \
@@ -116,3 +121,13 @@ jobs:
             --set appointmentService.image=appointment-service \
             --set appointmentService.tag=${{ github.sha }} \
             --values values-dev.yaml
+          
+          COUNT=$((COUNT + 1))
+          if [ $COUNT -ge $MAX_RETRIES ]; then
+            echo "Helm upgrade failed after $MAX_RETRIES attempts."
+            exit 1
+          fi
+
+          echo "Helm upgrade failed. Retrying in $RETRY_DELAY seconds... (Attempt $COUNT/$MAX_RETRIES)"
+          sleep $RETRY_DELAY
+          done
