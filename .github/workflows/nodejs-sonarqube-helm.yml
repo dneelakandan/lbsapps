@@ -121,7 +121,7 @@ jobs:
             --set appointmentService.image=appointment-service \
             --set appointmentService.tag=${{ github.sha }} \
             --values values-dev.yaml
-          
+          do
             COUNT=$((COUNT + 1))
             if [ $COUNT -ge $MAX_RETRIES ]; then
               echo "Helm upgrade failed after $MAX_RETRIES attempts."
