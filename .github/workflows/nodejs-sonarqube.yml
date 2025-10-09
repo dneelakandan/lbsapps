@@ -195,26 +195,7 @@ jobs:
 
  
     
-    - name: Deploy appointment-service with Helm
-      run: |
-        cd helm/appointment-service
-        pwd
-        helm upgrade --install appointment-service . \
-          --namespace healthcare \
-          --create-namespace \
-          --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
-          --set image.tag=latest
-          --values values.yaml
-          
-    - name: Deploy patient-service with Helm
-      run: |
-        cd helm/patient-service
-        helm upgrade --install patient-service . \
-          --namespace healthcare \
-          --create-namespace \
-          --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
-          --set image.tag=latest
-          --values values.yaml
+   
 
     
     
