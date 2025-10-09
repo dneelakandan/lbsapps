@@ -78,6 +78,7 @@ jobs:
     - name: Deploy appointment-service with Helm
       run: |
         cd helm
+        pwd
         helm upgrade --install application-service .\
           --namespace healthcare \
           --create-namespace \
