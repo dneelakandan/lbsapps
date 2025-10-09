@@ -78,7 +78,7 @@ jobs:
     - name: Deploy appointment-service with Helm
       run: |
         cd helm
-        helm upgrade --install healthcare ./helm/appointment-service \
+        helm upgrade --install healthcare .\
           --namespace healthcare \
           --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
