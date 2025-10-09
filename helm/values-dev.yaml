@@ -30,7 +30,7 @@ persistence:
   size: 1Gi
   storageClass: "default"
 
-#image:
-#  credentials:
-#    username: ""
- #   password: ""
+image:
+  credentials:
+    username: "7117779e-f45c-4e08-8f88-630f9698e5dc"
+    password: "mHw8Q~tYfuadnQe27453emFkLkJP_s1aXjHtdbOF"
