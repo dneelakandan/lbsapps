@@ -84,7 +84,7 @@ jobs:
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: healthcare-ns
+            name: healthcare
             labels:
               app.kubernetes.io/managed-by: Helm
             annotations:
@@ -95,7 +95,7 @@ jobs:
       - name: Create ACR pull secret
         run: |
           kubectl create secret docker-registry acr-secret \
-            --namespace healthcare-ns \
+            --namespace healthcare \
             --docker-server=${{ secrets.ACR_NAME }}.azurecr.io \
             --docker-username=${{ secrets.AZURE_CLIENT_ID }} \
             --docker-password=${{ secrets.AZURE_CLIENT_SECRET }} \
@@ -109,8 +109,20 @@ jobs:
           RETRY_DELAY=30
           COUNT=0
 
+RELEASE_NAME=healthcare
+NAMESPACE=healthcare
+
+# Check for pending operations
+STATUS=$(helm status $RELEASE_NAME --namespace $NAMESPACE 2>&1 || true)
+if echo "$STATUS" | grep -q "pending"; then
+  echo "Helm release is in a pending state. Cleaning up..."
+  kubectl delete secret -n $NAMESPACE sh.helm.release.v1.$RELEASE_NAME.v1 || true
+  helm uninstall $RELEASE_NAME --namespace $NAMESPACE || true
+  sleep 10
+fi
+
           until helm upgrade --install healthcare . \
-            --namespace healthcare-ns \
+            --namespace healthcare \
             --create-namespace \
             --wait \
             --timeout 10m \
