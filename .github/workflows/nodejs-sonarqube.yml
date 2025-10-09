@@ -58,8 +58,8 @@ jobs:
     - name: Set AKS context
       run: az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GRP }} --name ${{ secrets.AKS_CLUSTER }}
     
-    - name: Create name space
-      run: kubectl create namespace healthcare
+    #- name: Create name space
+    #  run: kubectl create namespace healthcare
     
     #- name: Enable AKS API server public access
     #  run: |
