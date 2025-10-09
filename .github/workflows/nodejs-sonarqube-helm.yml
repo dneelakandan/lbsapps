@@ -164,7 +164,7 @@ jobs:
             --wait \
             --timeout 15m \
             --set global.environment=dev \
-            --set image.registry=${{ secrets.ACR_NAME }} \
+            --set image.registry=${{ secrets.ACR_NAME }}.azurecr.io \
             --set patientService.image=patient-service \
             --set patientService.tag=latest \
             --set appointmentService.image=appointment-service \
