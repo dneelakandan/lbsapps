@@ -74,13 +74,13 @@ jobs:
     
     - name: Deploy appointment-service with Helm
       run: |
-        helm upgrade --install appointment-service ./helm/appointment-service \
+        helm upgrade --install default ./helm/appointment-service \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
           --set image.tag=latest
 
     - name: Deploy patient-service with Helm
       run: |
-        helm upgrade --install patient-service ./helm/patient-service \
+        helm upgrade --install default ./helm/patient-service \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
           --set image.tag=latest
 
