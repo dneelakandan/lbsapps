@@ -148,13 +148,13 @@ jobs:
         # Use --create-namespace but it should work now since we pre-created it with proper labels
         helm upgrade --install healthcare . \
           --namespace healthcare-ns \
-          --create-namespace \   
+          --create-namespace \ 
           --wait \
           --timeout 10m \
           --set global.environment=dev \
           --set image.registry=${{ secrets.ACR_NAME }} \
           --set patientService.image=patient-service \
-          --set patientService.tag=${{ github.sha }} \  
+          --set patientService.tag=${{ github.sha }} \
           --set appointmentService.image=appointment-service \
           --set appointmentService.tag=${{ github.sha }} \
           --values values-dev.yaml
