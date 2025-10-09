@@ -77,19 +77,22 @@ jobs:
     
     - name: Deploy appointment-service with Helm
       run: |
-        helm upgrade --install appointment-service ./helm/appointment-service \
+        cd helm
+        helm upgrade --install healthcare ./helm/appointment-service \
           --namespace healthcare \
           --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/appointment-service \
           --set image.tag=latest
-
-    - name: Deploy patient-service with Helm
-      run: |
-        helm upgrade --install patient-service ./helm/patient-service \
-          --namespace healthcare \
-          --create-namespace \
           --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
           --set image.tag=latest
+          --values values.yaml
+    #- name: Deploy patient-service with Helm
+     # run: |
+     #   helm upgrade --install patient-service ./helm/patient-service \
+     #     --namespace healthcare \
+     #     --create-namespace \
+     #     --set image.repository=${{ secrets.ACR_NAME }}.azurecr.io/patient-service \
+     #     --set image.tag=latest
 
     
     #- name: Revoke AKS API server public access
