@@ -54,12 +54,12 @@ jobs:
       - name: Build and push Docker image for appointment-service
         run: |
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:${{ github.sha }} ./services/appointment-service
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:${{ github.sha }}
 
       - name: Build and push Docker image for patient-service
         run: |
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:${{ github.sha }} ./services/patient-service
-          docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:${{ github.sha }}
 
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
