@@ -109,17 +109,17 @@ jobs:
           RETRY_DELAY=30
           COUNT=0
 
-RELEASE_NAME=healthcare
-NAMESPACE=healthcare
+          RELEASE_NAME=healthcare
+          NAMESPACE=healthcare
 
-# Check for pending operations
-STATUS=$(helm status $RELEASE_NAME --namespace $NAMESPACE 2>&1 || true)
-if echo "$STATUS" | grep -q "pending"; then
-  echo "Helm release is in a pending state. Cleaning up..."
-  kubectl delete secret -n $NAMESPACE sh.helm.release.v1.$RELEASE_NAME.v1 || true
-  helm uninstall $RELEASE_NAME --namespace $NAMESPACE || true
-  sleep 10
-fi
+          # Check for pending operations
+          STATUS=$(helm status $RELEASE_NAME --namespace $NAMESPACE 2>&1 || true)
+          if echo "$STATUS" | grep -q "pending"; then
+            echo "Helm release is in a pending state. Cleaning up..."
+            kubectl delete secret -n $NAMESPACE sh.helm.release.v1.$RELEASE_NAME.v1 || true
+            helm uninstall $RELEASE_NAME --namespace $NAMESPACE || true
+            sleep 10
+          fi
 
           until helm upgrade --install healthcare . \
             --namespace healthcare \
