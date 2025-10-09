@@ -122,12 +122,12 @@ jobs:
             --set appointmentService.tag=${{ github.sha }} \
             --values values-dev.yaml
           
-          COUNT=$((COUNT + 1))
-          if [ $COUNT -ge $MAX_RETRIES ]; then
-            echo "Helm upgrade failed after $MAX_RETRIES attempts."
-            exit 1
-          fi
+            COUNT=$((COUNT + 1))
+            if [ $COUNT -ge $MAX_RETRIES ]; then
+              echo "Helm upgrade failed after $MAX_RETRIES attempts."
+              exit 1
+            fi
 
-          echo "Helm upgrade failed. Retrying in $RETRY_DELAY seconds... (Attempt $COUNT/$MAX_RETRIES)"
-          sleep $RETRY_DELAY
+            echo "Helm upgrade failed. Retrying in $RETRY_DELAY seconds... (Attempt $COUNT/$MAX_RETRIES)"
+            sleep $RETRY_DELAY
           done
