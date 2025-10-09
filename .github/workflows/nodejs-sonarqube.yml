@@ -117,81 +117,47 @@ jobs:
 
           sleep 15
  
-      - name: Create namespace with Helm labels
+    - name: Create namespace with Helm labels
+      run: |
+        # Create namespace with proper Helm labels and annotations
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: healthcare-ns
+          labels:
+            app.kubernetes.io/managed-by: Helm
+          annotations:
+            meta.helm.sh/release-name: healthcare
+            meta.helm.sh/release-namespace: healthcare
 
-        run: |
-
-          # Create namespace with proper Helm labels and annotations
-
-          cat <<EOF | kubectl apply -f -
-
-          apiVersion: v1
-
-          kind: Namespace
-
-          metadata:
-
-            name: healthcare-ns
-
-            labels:
-
-              app.kubernetes.io/managed-by: Helm
-
-            annotations:
-
-              meta.helm.sh/release-name: healthcare
-
-              meta.helm.sh/release-namespace: healthcare
-
-          EOF
+        EOF
  
-      - name: Create ACR pull secret
+    - name: Create ACR pull secret
+      run: |
+        kubectl create secret docker-registry acr-secret \
+          --namespace healthcare-ns \
+          --docker-server=${{ secrets.ACR_NAME }} \
+          --docker-username=${{ secrets.AZURE_CLIENT_ID }} \
+          --docker-password=${{ secrets.AZURE_CLIENT_SECRET }} \
+          --dry-run=client -o yaml | kubectl apply -f -
 
-        run: |
-
-          kubectl create secret docker-registry acr-secret \
-
-            --namespace healthcare-ns \
-
-            --docker-server=${{ secrets.ACR_NAME }} \
-
-            --docker-username=${{ secrets.AZURE_CLIENT_ID }} \
-
-            --docker-password=${{ secrets.AZURE_CLIENT_SECRET }} \
-
-            --dry-run=client -o yaml | kubectl apply -f -
- 
-      - name: Deploy to AKS using Helm
-
-        run: |
-
-          cd kubernetes/helm
-
-          # Use --create-namespace but it should work now since we pre-created it with proper labels
-
-          helm upgrade --install healthcare-ns . \
-
-            --namespace healthcare-ns \
-
-            --create-namespace \   
-
-            --wait \
-
-            --timeout 10m \
-
-            --set global.environment=dev \
-
-            --set image.registry=${{ secrets.ACR_NAME }} \
-
-            --set patientService.image=patient-service \
-
-            --set patientService.tag=${{ github.sha }} \  
-
-            --set appointmentService.image=appointment-service \
-
-            --set appointmentService.tag=${{ github.sha }} \
-
-            --values values-dev.yaml
+    - name: Deploy to AKS using Helm
+      run: |
+        cd kubernetes/helm
+        # Use --create-namespace but it should work now since we pre-created it with proper labels
+        helm upgrade --install healthcare . \
+          --namespace healthcare-ns \
+          --create-namespace \   
+          --wait \
+          --timeout 10m \
+          --set global.environment=dev \
+          --set image.registry=${{ secrets.ACR_NAME }} \
+          --set patientService.image=patient-service \
+          --set patientService.tag=${{ github.sha }} \  
+          --set appointmentService.image=appointment-service \
+          --set appointmentService.tag=${{ github.sha }} \
+          --values values-dev.yaml
 
  
     
