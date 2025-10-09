@@ -73,6 +73,7 @@ jobs:
     - name: Install Helm
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
     - name: Clean up existing namespace with retry logic
       run: |
         # Function to delete namespace with retries
