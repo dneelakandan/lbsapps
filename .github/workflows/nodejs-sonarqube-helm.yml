@@ -125,7 +125,7 @@ jobs:
             --namespace healthcare \
             --create-namespace \
             --wait \
-            --timeout 10m \
+            --timeout 15m \
             --set global.environment=dev \
             --set image.registry=${{ secrets.ACR_NAME }} \
             --set patientService.image=patient-service \
