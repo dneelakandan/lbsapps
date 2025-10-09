@@ -7,7 +7,7 @@ image:
   pullPolicy: IfNotPresent
   
 patientService:
-  name: patient-service
+  name: patientservice
   replicaCount: 2
   image: patient-service
   tag: latest
@@ -26,7 +26,7 @@ patientService:
     targetMemory: 70
 
 appointmentService:
-  name: appointment-service
+  name: appointmentservice
   replicaCount: 2
   image: appointment-service
   tag: latest
