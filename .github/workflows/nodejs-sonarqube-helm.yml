@@ -77,6 +77,43 @@ jobs:
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Clean up existing namespace with retry logic
+        run: |
+          # Function to delete namespace with retries
+          delete_namespace() {
+            local namespace=$1
+            local max_retries=3
+            local retry_count=0
+            while [ $retry_count -lt $max_retries ]; do
+              if kubectl get namespace "$namespace" >/dev/null 2>&1; then
+                echo "Namespace $namespace exists, attempting to delete (attempt $((retry_count + 1))/$max_retries)..."
+                kubectl delete namespace "$namespace" --ignore-not-found=true
+                # Wait for deletion with timeout
+                if kubectl wait --for=delete namespace/"$namespace" --timeout=60s 2>/dev/null; then
+                  echo "Namespace $namespace successfully deleted"
+                  return 0
+                else
+                  echo "Namespace deletion still in progress, waiting..."
+                  sleep 10
+                fi
+
+              else
+                echo "Namespace $namespace does not exist"
+                return 0
+             fi
+             retry_count=$((retry_count + 1))
+           done
+
+           echo "Warning: Could not fully delete namespace $namespace after $max_retries attempts"
+           return 1
+
+          }
+
+          # Delete the namespace
+          delete_namespace "healthcare" || true
+          # Additional wait to ensure namespace is gone
+          echo "Waiting for namespace cleanup to complete..."
+          sleep 15
 
       - name: Create namespace with Helm labels
         run: |
