@@ -68,10 +68,10 @@ jobs:
       matrix:
         service: [patient-service, appointment-service]
     steps:
-       - name: Azure Login
-         uses: azure/login@v1
-         with:
-           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Login to ACR
         run: az acr login --name ${{ secrets.ACR_NAME }}
