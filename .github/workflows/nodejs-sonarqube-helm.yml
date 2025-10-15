@@ -86,9 +86,12 @@ jobs:
         with:
           image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest'
           format: 'table'
+          output: 'trivy-results-appointment-service.txt'
           severity: 'CRITICAL,HIGH'
           exit-code: 0  
       
+         
+
       - name: List files
         run: ls -l
 
@@ -97,9 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-results-appointment-service
-          path: |
-            trivy-results-appointment-service.json
-            trivy-results-appointment-service.sarif
+          path: trivy-results-appointment-service.txt
           retention-days: 30
 
       - name: Pull patient-service image from ACR
@@ -110,8 +111,10 @@ jobs:
         with:
           image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest'
           format: 'table'
+          output: 'trivy-results-patient-service.txt'
           severity: 'CRITICAL,HIGH'
           exit-code: 0  
+    
  
       - name: List files
         run: ls -l
@@ -121,9 +124,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-results-patient-service
-          path: |
-            trivy-results-patient-service.json
-            trivy-results-patient-service.sarif
+          path: trivy-results-patient-service.txt
           retention-days: 30
 
 
