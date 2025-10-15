@@ -60,6 +60,7 @@ jobs:
         run: |
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest ./services/patient-service
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest
+
 # Simplified Trivy scan without CodeQL upload
   trivy-scan:
     runs-on: ubuntu-latest
@@ -75,6 +76,10 @@ jobs:
 
       - name: Login to ACR
         run: echo "${{ secrets.AZURE_CLIENT_SECRET }}" | docker login ${{ secrets.ACR_NAME }}.azurecr.io -u "${{ secrets.AZURE_CLIENT_ID }}" --password-stdin
+      
+      
+      - name: Pull image from ACR
+        run: docker pull ${{ secrets.ACR_NAME }}.azurecr.io/${{ matrix.service }}:latest
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.24.0
