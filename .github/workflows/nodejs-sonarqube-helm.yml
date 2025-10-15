@@ -95,8 +95,8 @@ jobs:
         with:
           name: trivy-results-appointment-service
           path: |
-            trivy-results-*.json
-            trivy-results-*.sarif
+            trivy-results-appointment-service.json
+            trivy-results-appointment-service.sarif
           retention-days: 30
 
       - name: Pull patient-service image from ACR
@@ -116,8 +116,8 @@ jobs:
         with:
           name: trivy-results-patient-service
           path: |
-            trivy-results-*.json
-            trivy-results-*.sarif
+            trivy-results-patient-service.json
+            trivy-results-patient-service.sarif
           retention-days: 30
 
 
