@@ -65,9 +65,9 @@ jobs:
   trivy-scan:
     runs-on: ubuntu-latest
     needs: build-and-deploy
-    strategy:
-      matrix:
-        service: [patient-service, appointment-service]
+   # strategy:
+   #   matrix:
+   #     service: [patient-service, appointment-service]
     steps:
       - name: Azure Login
         uses: azure/login@v1
@@ -78,26 +78,51 @@ jobs:
         run: echo "${{ secrets.AZURE_CLIENT_SECRET }}" | docker login ${{ secrets.ACR_NAME }}.azurecr.io -u "${{ secrets.AZURE_CLIENT_ID }}" --password-stdin
       
       
-      - name: Pull image from ACR
-        run: docker pull ${{ secrets.ACR_NAME }}.azurecr.io/${{ matrix.service }}:latest
+      - name: Pull appointment-service image from ACR
+        run: docker pull ${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest
 
-      - name: Run Trivy vulnerability scanner
+      - name: Run Trivy vulnerability scanner appointment-service
         uses: aquasecurity/trivy-action@0.24.0
         with:
-          image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/${{ matrix.service }}:latest'
+          image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/appointment-service:latest'
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: 0  
  
-      - name: Upload Trivy results as artifact
+      - name: Upload Trivy results as artifact for appointment-service
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-results-${{ matrix.service }}
+          name: trivy-results-appointment-service
           path: |
             trivy-results-*.json
             trivy-results-*.sarif
           retention-days: 30
+
+      - name: Pull patient-service image from ACR
+        run: docker pull ${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest
+
+      - name: Run Trivy vulnerability scanner appointment-service
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: '${{ secrets.ACR_NAME }}.azurecr.io/patient-service:latest'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
+          exit-code: 0  
+ 
+      - name: Upload Trivy results as artifact for patient-service
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-results-patient-service
+          path: |
+            trivy-results-*.json
+            trivy-results-*.sarif
+          retention-days: 30
+
+
+
+
       - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
