@@ -63,7 +63,7 @@ jobs:
 # Simplified Trivy scan without CodeQL upload
   trivy-scan:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build-and-deploy
     strategy:
       matrix:
         service: [patient-service, appointment-service]
